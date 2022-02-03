@@ -1,5 +1,5 @@
 module.exports = {
-    check: (client,prefix,ownerid) => {
+    check: (client,prefix) => {
         client.on("messageCreate", message => {
             if (message.author.bot) return;
             if (message.author.guild) return;
@@ -11,18 +11,59 @@ module.exports = {
                 if (!client.commands.has(command) && !client.alias.has(command)) {
                     return;
                 }
-                if (client.commands.get(command.owneronly) == 1 && !message.author.id == ownerid) return;
                 try {
-                    if (client.commands.get(command))
-                        client.commands.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
-                    else
-                        client.alias.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                    if (client.commands.get(command)) {
+                        let permLevel = client.commands.get(command).permLevel;
+                        if (permLevel == 0) {
+                            client.commands.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 1 && message.member.permissions.has("MESSAGE_DELETE")) {
+                            client.commands.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 2 && message.member.permissions.has("KICK_MEMBERS")) {
+                            client.commands.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 3 && message.member.permissions.has("BAN_MEMBERS")) {
+                            client.commands.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 4 && message.member.permissions.has("ADMINISTRATOR")) {
+                            client.commands.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else {
+                            return;
+                        }
+                    }
+                    else if (client.alias.get(command)) {
+                        let permLevel = client.alias.get(command).permLevel;
+                        if (permLevel == 0) {
+                            client.alias.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 1 && message.member.permissions.has("MESSAGE_DELETE")) {
+                            client.alias.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 2 && message.member.permissions.has("KICK_MEMBERS")) {
+                            client.alias.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 3 && message.member.permissions.has("BAN_MEMBERS")) {
+                            client.alias.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else if (permLevel == 4 && message.member.permissions.has("ADMINISTRATOR")) {
+                            client.alias.get(command).run(client, message, msg.join(msg[0]), message.author, prefix)
+                        }
+                        else {
+                            return;
+                        }
+                    }
+                    else {
+                        return;
+                    }
+                    
                 }
                 catch (err) {
                     console.log(err)
                 }
+            
             }
-
         })
     }
 }
